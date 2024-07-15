@@ -1,7 +1,3 @@
-import threading
-
-from threading import Thread
-
 from app.models.dao.article_model_dao import ArticlesModelDAO, ArticleModelDAO
 
 

@@ -1,4 +1,5 @@
 import json
+
 from concurrent.futures import ThreadPoolExecutor
 
 from http import HTTPStatus
@@ -8,6 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
 from app.database.db_connection import close_connection, create_connection
+from app.errors.custom_error import CustomError
 from app.handlers.article_handler import ArticleHandler
 from app.models.dao.article_model_dao import ArticleModelDAO
 from app.services.articles_service import ArticlesService
@@ -17,8 +19,6 @@ origins = [
     "http://localhost",
     "http://localhost:3000",
 ]
-
-# TODO: Fix up the thread by adding it to the main.py
 
 app = FastAPI(title="PyShop API", description="This is a very fancy project", version="0.3.1", openapi_prefix="/api")
 connection = create_connection()
@@ -54,13 +54,12 @@ async def health_endpoint() -> str:
 async def get_articles_endpoint() -> JSONResponse:
     response = article_handler.get_articles_handler()
 
-    match response:
-        case ArticlesModelDTO():
-            return JSONResponse(status_code=200, content=json.loads(response.model_dump_json()))
-        case HTTPStatus.NOT_FOUND:
-            return JSONResponse(status_code=404, content={"message": "Articles not found"})
-        case _:
-            return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
+    if isinstance(response, ArticlesModelDTO):
+        return JSONResponse(status_code=200, content=json.loads(response.model_dump_json()))
+    elif hasattr(response, 'status_code') and response.status_code == 404:
+        return JSONResponse(status_code=404, content={"message": "Articles not found"})
+    else:
+        return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
 
 @app.get("/article/{id}",
@@ -74,50 +73,51 @@ async def get_articles_endpoint() -> JSONResponse:
 async def get_article_endpoint(id: int) -> JSONResponse:
     response = article_handler.get_article_handler(id)
 
-    match response:
-        case ArticleModelDTO():
-            return JSONResponse(status_code=200, content=json.loads(response.model_dump_json()))
-        case HTTPStatus.NOT_FOUND:
-            return JSONResponse(status_code=404, content={"message": "Article not found"})
-        case _:
-            return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
+    if isinstance(response, ArticleModelDTO):
+        return JSONResponse(status_code=200, content=json.loads(response.model_dump_json()))
+    elif hasattr(response, 'status_code') and response.status_code == 404:
+        return JSONResponse(status_code=404, content={"message": "Article not found"})
+    else:
+        return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
 
 @app.post("/article",
           name="Create an article",
           description="Create an article and add it to the database",
           responses={200: {"description": "Article created successfully!", "model": ArticleModelDTOEndpoint},
+                     400: {"description": "Bad Request", "model": str},
                      422: {"description": "Unprocessable Entity", "model": str},
                      500: {"description": "Internal Server Error", "model": str}
                      })
 async def create_article_endpoint(article: ArticleModelDTOEndpoint) -> JSONResponse:
-
     future = executor.submit(article_handler.create_article_handler, article)
     response = future.result()
 
-    match response:
-        case ArticleModelDTOEndpoint():
-            return JSONResponse(status_code=200, content=json.loads(response.model_dump_json()))
-        case _:
-            return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
+    if isinstance(response, ArticleModelDTOEndpoint):
+        return JSONResponse(status_code=200, content=json.loads(response.model_dump_json()))
+    elif hasattr(response, 'status_code') and response.status_code == 400:
+        return JSONResponse(status_code=400, content={"message": "Bad Request"})
+    else:
+        return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
 
 @app.put("/article/{id}",
          name="Update an article",
          description="Update an article in the database",
          responses={200: {"description": "Article updated successfully!", "model": ArticleModelDTOEndpoint},
-                    400: {"description": "Article not found", "model": str},
+                    400: {"description": "Bad Request", "model": str},
                     422: {"description": "Unprocessable Entity", "model": str},
                     500: {"description": "Internal Server Error", "model": str}
                     })
 async def update_article_endpoint(id: int, article: ArticleModelDTOEndpoint) -> JSONResponse:
     response = article_handler.update_article_handler(id, article)
 
-    match response:
-        case ArticleModelDAO():
-            return JSONResponse(status_code=200, content=json.loads(response.model_dump_json()))
-        case _:
-            return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
+    if isinstance(response, ArticleModelDTOEndpoint):
+        return JSONResponse(status_code=200, content=json.loads(response.model_dump_json()))
+    elif hasattr(response, 'status_code') and response.status_code == 400:
+        return JSONResponse(status_code=400, content={"message": "Bad Request"})
+    else:
+        return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
 
 @app.delete("/article/{id}",
@@ -129,15 +129,14 @@ async def update_article_endpoint(id: int, article: ArticleModelDTOEndpoint) -> 
                        500: {"description": "Internal Server Error", "model": str}
                        })
 async def delete_article_endpoint(id: int) -> JSONResponse:
-    response: HTTPStatus = article_handler.delete_article_handler(id)
+    response = article_handler.delete_article_handler(id)
 
-    match response:
-        case HTTPStatus.OK:
-            return JSONResponse(status_code=200, content={"message": "Article deleted successfully!"})
-        case HTTPStatus.NOT_FOUND:
-            return JSONResponse(status_code=404, content={"message": "Article not found"})
-        case _:
-            return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
+    if response is None:
+        return JSONResponse(status_code=200, content={"message": "Article deleted successfully!"})
+    elif hasattr(response, 'status_code') and response.status_code == 404:
+        return JSONResponse(status_code=404, content={"message": "Article not found"})
+    else:
+        return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
 
 @app.get("/close-connection",

@@ -17,6 +17,6 @@ class ArticleModelDTOEndpoint(BaseModel):
     last_name: str
     price: float
 
+
 class ArticlesModelDTO(BaseModel):
     articles: list[ArticleModelDTO]
-

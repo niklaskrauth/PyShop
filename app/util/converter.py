@@ -17,7 +17,7 @@ def convert_articles_model_dao_to_articles_model_dto(articles_dao: ArticlesModel
             articles_dto.articles.append(article_dto)
         return articles_dto
     except Exception:
-        return CustomError("Error converting articles model dao to articles model dto", "converter_error")
+        return CustomError("Error converting articles model dao to articles model dto", 500)
 
 
 def convert_list_to_article_model_dto(article: list) -> ArticleModelDTO | Exception:
@@ -26,7 +26,7 @@ def convert_list_to_article_model_dto(article: list) -> ArticleModelDTO | Except
         article_dto = ArticleModelDTO(**article_dict)
         return article_dto
     except Exception:
-        return CustomError("Error converting list to article model dto", "converter_error")
+        return CustomError("Error converting list to article model dto", 500)
 
 
 def convert_article_model_dto_endpoint_to_article_model_dao(article_dto_endpoint: ArticleModelDTOEndpoint) -> (
@@ -41,4 +41,4 @@ def convert_article_model_dto_endpoint_to_article_model_dao(article_dto_endpoint
         )
         return article_dao
     except Exception:
-        return CustomError("Error converting article model dto to article model dao", "converter_error")
+        return CustomError("Error converting article model dto to article model dao", 500)
