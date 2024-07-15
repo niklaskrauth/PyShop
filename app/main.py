@@ -1,9 +1,7 @@
 import json
-import threading
+from concurrent.futures import ThreadPoolExecutor
 
-from threading import Thread
 from http import HTTPStatus
-from typing import Any
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -27,6 +25,7 @@ connection = create_connection()
 cursor = connection.cursor()
 article_service = ArticlesService(connection)
 article_handler = ArticleHandler(article_service)
+executor = ThreadPoolExecutor(max_workers=2)
 
 app.add_middleware(
     CORSMiddleware,
@@ -41,7 +40,7 @@ app.add_middleware(
          name="Health Check",
          description="Check the health of the backend",
          responses={200: {"description": "Backend is healthy", "model": str}})
-async def health() -> str:
+async def health_endpoint() -> str:
     return "Backend is healthy"
 
 
@@ -52,8 +51,8 @@ async def health() -> str:
                     404: {"description": "Articles not found", "model": str},
                     500: {"description": "Internal Server Error", "model": str}
                     })
-async def get_articles() -> JSONResponse:
-    response = article_handler.get_articles_from_articles_service()
+async def get_articles_endpoint() -> JSONResponse:
+    response = article_handler.get_articles_handler()
 
     match response:
         case ArticlesModelDTO():
@@ -72,8 +71,8 @@ async def get_articles() -> JSONResponse:
                     422: {"description": "Unprocessable Entity", "model": str},
                     500: {"description": "Internal Server Error", "model": str}
                     })
-async def get_article(id: int) -> JSONResponse:
-    response = article_handler.get_article_from_articles_service(id)
+async def get_article_endpoint(id: int) -> JSONResponse:
+    response = article_handler.get_article_handler(id)
 
     match response:
         case ArticleModelDTO():
@@ -91,8 +90,10 @@ async def get_article(id: int) -> JSONResponse:
                      422: {"description": "Unprocessable Entity", "model": str},
                      500: {"description": "Internal Server Error", "model": str}
                      })
-async def create_article(article: ArticleModelDTOEndpoint) -> JSONResponse:
-    response = article_handler.create_article_in_articles_service(article)
+async def create_article_endpoint(article: ArticleModelDTOEndpoint) -> JSONResponse:
+
+    future = executor.submit(article_handler.create_article_handler, article)
+    response = future.result()
 
     match response:
         case ArticleModelDTOEndpoint():
@@ -109,8 +110,8 @@ async def create_article(article: ArticleModelDTOEndpoint) -> JSONResponse:
                     422: {"description": "Unprocessable Entity", "model": str},
                     500: {"description": "Internal Server Error", "model": str}
                     })
-async def update_article(id: int, article: ArticleModelDTOEndpoint) -> JSONResponse:
-    response = article_handler.update_article_in_articles_service(id, article)
+async def update_article_endpoint(id: int, article: ArticleModelDTOEndpoint) -> JSONResponse:
+    response = article_handler.update_article_handler(id, article)
 
     match response:
         case ArticleModelDAO():
@@ -127,8 +128,8 @@ async def update_article(id: int, article: ArticleModelDTOEndpoint) -> JSONRespo
                        422: {"description": "Unprocessable Entity", "model": str},
                        500: {"description": "Internal Server Error", "model": str}
                        })
-async def delete_article(id: int) -> JSONResponse:
-    response: HTTPStatus = article_handler.delete_article_in_articles_service(id)
+async def delete_article_endpoint(id: int) -> JSONResponse:
+    response: HTTPStatus = article_handler.delete_article_handler(id)
 
     match response:
         case HTTPStatus.OK:
@@ -143,6 +144,6 @@ async def delete_article(id: int) -> JSONResponse:
          name="Close connection",
          description="Close the database connection",
          responses={200: {"description": "Connection closed successfully!", "model": HTTPStatus}})
-async def close() -> HTTPStatus:
+async def close_endpoint() -> HTTPStatus:
     close_connection(connection)
     return HTTPStatus.OK

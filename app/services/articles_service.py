@@ -38,7 +38,7 @@ class ArticlesService:
             except Exception as e:
                 return e
 
-    def create_article_thread(self, article: ArticleModelDAO) -> None | Exception:
+    def create_article(self, article: ArticleModelDAO) -> None | Exception:
         if self.connection:
             try:
                 cursor = self.connection.cursor()
@@ -49,15 +49,9 @@ class ArticlesService:
             except Exception as e:
                 return e
 
-    def create_article(self, article: ArticleModelDAO) -> None:
-        thread: Thread = threading.Thread(target=self.create_article_thread, args=(article,))
-        return thread.start()
-
     def update_article(self, id: int, article: ArticleModelDAO) -> None | Exception:
         if self.connection:
             try:
-                print(article)
-                print(id)
                 cursor = self.connection.cursor()
                 cursor.execute(
                     "UPDATE articles SET first_name = %s, last_name = %s, imageUrl = %s, price = %s WHERE id = %s",

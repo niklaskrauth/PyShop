@@ -10,7 +10,7 @@ class ArticleHandler:
     def __init__(self, service):
         self.service = service
 
-    def get_articles_from_articles_service(self) -> ArticlesModelDTO | HTTPStatus:
+    def get_articles_handler(self) -> ArticlesModelDTO | HTTPStatus:
         try:
             articles: ArticlesModelDAO = self.service.get_all_articles()
             if articles is not None:
@@ -20,7 +20,7 @@ class ArticleHandler:
         except Exception:
             return HTTPStatus.INTERNAL_SERVER_ERROR
 
-    def get_article_from_articles_service(self, id: int) -> ArticleModelDTO | HTTPStatus:
+    def get_article_handler(self, id: int) -> ArticleModelDTO | HTTPStatus:
         try:
             article: list = self.service.get_article(id)
             if article is not None:
@@ -30,7 +30,7 @@ class ArticleHandler:
         except Exception:
             return HTTPStatus.INTERNAL_SERVER_ERROR
 
-    def create_article_in_articles_service(self, article: ArticleModelDTOEndpoint) -> (
+    def create_article_handler(self, article: ArticleModelDTOEndpoint) -> (
             ArticleModelDTOEndpoint | HTTPStatus):
         try:
             if (article.first_name is not None and
@@ -42,7 +42,7 @@ class ArticleHandler:
         except Exception:
             return HTTPStatus.INTERNAL_SERVER_ERROR
 
-    def update_article_in_articles_service(self, id: int, article: ArticleModelDTOEndpoint) -> (
+    def update_article_handler(self, id: int, article: ArticleModelDTOEndpoint) -> (
             ArticleModelDAO | HTTPStatus):
         try:
             if (article.first_name is not None and
@@ -55,7 +55,7 @@ class ArticleHandler:
         except Exception:
             return HTTPStatus.INTERNAL_SERVER_ERROR
 
-    def delete_article_in_articles_service(self, id: int) -> HTTPStatus:
+    def delete_article_handler(self, id: int) -> HTTPStatus:
         try:
             if self.service.exists_article_with_id(id):
                 self.service.delete_article(id)
