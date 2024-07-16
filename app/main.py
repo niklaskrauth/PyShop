@@ -1,10 +1,10 @@
-import json
-
+import sys
 from concurrent.futures import ThreadPoolExecutor
 
 from http import HTTPStatus
 
 from fastapi import FastAPI
+from loguru import logger
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
@@ -17,11 +17,17 @@ from app.models.dto.article_model_dto import (
     ArticleModelDTOEndpoint,
 )
 
+# TODO: Change the models to use Pydantic
+# TODO: Add tests via Pytest
+
 origins = [
     "http://localhost",
     "http://localhost:3000",
 ]
 
+logger.add(
+    sys.stderr, format="{time} {level} {message}", filter="my_module", level="INFO"
+)
 app = FastAPI(
     title="PyShop API",
     description="This is a very fancy project",
@@ -64,18 +70,7 @@ async def health_endpoint() -> str:
     },
 )
 async def get_articles_endpoint() -> JSONResponse:
-    response = article_handler.get_articles_handler()
-
-    if isinstance(response, ArticlesModelDTO):
-        return JSONResponse(
-            status_code=200, content=json.loads(response.model_dump_json())
-        )
-    elif hasattr(response, "status_code") and response.status_code == 404:
-        return JSONResponse(status_code=404, content={"message": "Articles not found"})
-    else:
-        return JSONResponse(
-            status_code=500, content={"message": "Internal Server Error"}
-        )
+    return article_handler.get_articles_handler()
 
 
 @app.get(
@@ -90,18 +85,7 @@ async def get_articles_endpoint() -> JSONResponse:
     },
 )
 async def get_article_endpoint(id: int) -> JSONResponse:
-    response = article_handler.get_article_handler(id)
-
-    if isinstance(response, ArticleModelDTO):
-        return JSONResponse(
-            status_code=200, content=json.loads(response.model_dump_json())
-        )
-    elif hasattr(response, "status_code") and response.status_code == 404:
-        return JSONResponse(status_code=404, content={"message": "Article not found"})
-    else:
-        return JSONResponse(
-            status_code=500, content={"message": "Internal Server Error"}
-        )
+    return article_handler.get_article_handler(id)
 
 
 @app.post(
@@ -120,18 +104,7 @@ async def get_article_endpoint(id: int) -> JSONResponse:
 )
 async def create_article_endpoint(article: ArticleModelDTOEndpoint) -> JSONResponse:
     future = executor.submit(article_handler.create_article_handler, article)
-    response = future.result()
-
-    if isinstance(response, ArticleModelDTOEndpoint):
-        return JSONResponse(
-            status_code=200, content=json.loads(response.model_dump_json())
-        )
-    elif hasattr(response, "status_code") and response.status_code == 400:
-        return JSONResponse(status_code=400, content={"message": "Bad Request"})
-    else:
-        return JSONResponse(
-            status_code=500, content={"message": "Internal Server Error"}
-        )
+    return future.result()
 
 
 @app.put(
@@ -151,18 +124,7 @@ async def create_article_endpoint(article: ArticleModelDTOEndpoint) -> JSONRespo
 async def update_article_endpoint(
     id: int, article: ArticleModelDTOEndpoint
 ) -> JSONResponse:
-    response = article_handler.update_article_handler(id, article)
-
-    if isinstance(response, ArticleModelDTOEndpoint):
-        return JSONResponse(
-            status_code=200, content=json.loads(response.model_dump_json())
-        )
-    elif hasattr(response, "status_code") and response.status_code == 400:
-        return JSONResponse(status_code=400, content={"message": "Bad Request"})
-    else:
-        return JSONResponse(
-            status_code=500, content={"message": "Internal Server Error"}
-        )
+    return article_handler.update_article_handler(id, article)
 
 
 @app.delete(
@@ -177,18 +139,7 @@ async def update_article_endpoint(
     },
 )
 async def delete_article_endpoint(id: int) -> JSONResponse:
-    response = article_handler.delete_article_handler(id)
-
-    if response is None:
-        return JSONResponse(
-            status_code=200, content={"message": "Article deleted successfully!"}
-        )
-    elif hasattr(response, "status_code") and response.status_code == 404:
-        return JSONResponse(status_code=404, content={"message": "Article not found"})
-    else:
-        return JSONResponse(
-            status_code=500, content={"message": "Internal Server Error"}
-        )
+    return article_handler.delete_article_handler(id)
 
 
 @app.get(

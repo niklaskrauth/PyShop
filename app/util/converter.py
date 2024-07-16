@@ -1,4 +1,5 @@
-from app.errors.custom_error import CustomError
+from loguru import logger
+
 from app.models.dao.article_model_dao import ArticlesModelDAO, ArticleModelDAO
 from app.models.dto.article_model_dto import (
     ArticlesModelDTO,
@@ -22,10 +23,9 @@ def convert_articles_model_dao_to_articles_model_dto(
             )
             articles_dto.articles.append(article_dto)
         return articles_dto
-    except Exception:
-        return CustomError(
-            "Error converting articles model dao to articles model dto", 500
-        )
+    except Exception as e:
+        logger.error(f"Error converting articles model dao to articles model dto: {e}")
+    return e
 
 
 def convert_list_to_article_model_dto(article: list) -> ArticleModelDTO | Exception:
@@ -35,8 +35,9 @@ def convert_list_to_article_model_dto(article: list) -> ArticleModelDTO | Except
         )
         article_dto = ArticleModelDTO(**article_dict)
         return article_dto
-    except Exception:
-        return CustomError("Error converting list to article model dto", 500)
+    except Exception as e:
+        logger.error(f"Error converting list to article model dto: {e}")
+        return e
 
 
 def convert_article_model_dto_endpoint_to_article_model_dao(
@@ -51,7 +52,8 @@ def convert_article_model_dto_endpoint_to_article_model_dao(
             price=article_dto_endpoint.price,
         )
         return article_dao
-    except Exception:
-        return CustomError(
-            "Error converting article model dto to article model dao", 500
+    except Exception as e:
+        logger.error(
+            f"Error converting article model dto endpoint to article model dao: {e}"
         )
+        return e
