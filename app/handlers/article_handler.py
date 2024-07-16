@@ -24,7 +24,7 @@ class ArticleHandler:
         try:
             articles: ArticlesModelDAO = self.service.get_all_articles()
 
-            if articles is not None or len(articles) > 0:
+            if articles is not None and len(articles) > 0:
                 articles: ArticlesModelDTO = (
                     convert_articles_model_dao_to_articles_model_dto(articles)
                 )

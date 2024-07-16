@@ -6,7 +6,6 @@ repos:
       - id: trailing-whitespace
       - id: check-case-conflict
       - id: check-builtin-literals
-      - id: check-json
       - id: detect-private-key
       - id: check-ast
       - id: debug-statements

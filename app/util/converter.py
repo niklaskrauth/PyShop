@@ -25,7 +25,7 @@ def convert_articles_model_dao_to_articles_model_dto(
         return articles_dto
     except Exception as e:
         logger.error(f"Error converting articles model dao to articles model dto: {e}")
-    return e
+        return e
 
 
 def convert_list_to_article_model_dto(article: list) -> ArticleModelDTO | Exception:

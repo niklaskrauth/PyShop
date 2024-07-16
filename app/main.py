@@ -18,7 +18,6 @@ from app.models.dto.article_model_dto import (
     ArticleModelDTOEndpoint,
 )
 
-# TODO: Change the models to use Pydantic
 # TODO: Add tests via Pytest
 
 origins = [
