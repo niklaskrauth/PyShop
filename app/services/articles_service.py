@@ -38,8 +38,15 @@ class ArticlesService:
         if self.connection:
             try:
                 cursor = self.connection.cursor()
-                cursor.execute("INSERT INTO articles (first_name, last_name, imageUrl, price) VALUES (%s, %s, %s, %s)",
-                               (article.first_name, article.last_name, article.imageUrl, article.price))
+                cursor.execute(
+                    "INSERT INTO articles (first_name, last_name, imageUrl, price) VALUES (%s, %s, %s, %s)",
+                    (
+                        article.first_name,
+                        article.last_name,
+                        article.imageUrl,
+                        article.price,
+                    ),
+                )
                 cursor.connection.commit()
                 return cursor.rowcount
             except Exception as e:
@@ -51,7 +58,14 @@ class ArticlesService:
                 cursor = self.connection.cursor()
                 cursor.execute(
                     "UPDATE articles SET first_name = %s, last_name = %s, imageUrl = %s, price = %s WHERE id = %s",
-                    (article.first_name, article.last_name, article.imageUrl, article.price, id))
+                    (
+                        article.first_name,
+                        article.last_name,
+                        article.imageUrl,
+                        article.price,
+                        id,
+                    ),
+                )
                 cursor.connection.commit()
                 return cursor.rowcount
             except Exception as e:

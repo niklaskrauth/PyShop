@@ -1,11 +1,11 @@
 import psycopg2
 
 DATABASE_CONFIG = {
-    'user': 'python',
-    'password': 'python',
-    'host': 'localhost',
-    'port': '5432',
-    'database': 'PyShop'
+    "user": "python",
+    "password": "python",
+    "host": "localhost",
+    "port": "5432",
+    "database": "PyShop",
 }
 
 

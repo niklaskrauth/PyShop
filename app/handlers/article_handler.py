@@ -1,8 +1,15 @@
 from app.errors.custom_error import CustomError
 from app.models.dao.article_model_dao import ArticlesModelDAO
-from app.models.dto.article_model_dto import ArticlesModelDTO, ArticleModelDTO, ArticleModelDTOEndpoint
-from app.util.converter import convert_articles_model_dao_to_articles_model_dto, convert_list_to_article_model_dto, \
-    convert_article_model_dto_endpoint_to_article_model_dao
+from app.models.dto.article_model_dto import (
+    ArticlesModelDTO,
+    ArticleModelDTO,
+    ArticleModelDTOEndpoint,
+)
+from app.util.converter import (
+    convert_articles_model_dao_to_articles_model_dto,
+    convert_list_to_article_model_dto,
+    convert_article_model_dto_endpoint_to_article_model_dao,
+)
 
 
 class ArticleHandler:
@@ -13,7 +20,9 @@ class ArticleHandler:
         try:
             articles: ArticlesModelDAO = self.service.get_all_articles()
             if articles is not None and len(articles) > 0:
-                articles: ArticlesModelDTO = convert_articles_model_dao_to_articles_model_dto(articles)
+                articles: ArticlesModelDTO = (
+                    convert_articles_model_dao_to_articles_model_dto(articles)
+                )
                 return articles
             return CustomError("Error getting all articles", 404)
         except Exception:
@@ -29,23 +38,35 @@ class ArticleHandler:
         except Exception:
             return CustomError("Internal Error", 500)
 
-    def create_article_handler(self, article: ArticleModelDTOEndpoint) -> ArticleModelDTOEndpoint | CustomError:
+    def create_article_handler(
+        self, article: ArticleModelDTOEndpoint
+    ) -> ArticleModelDTOEndpoint | CustomError:
         try:
-            if (article.first_name is not None and
-                    article.last_name is not None and
-                    article.price is not None):
-                self.service.create_article(convert_article_model_dto_endpoint_to_article_model_dao(article))
+            if (
+                article.first_name is not None
+                and article.last_name is not None
+                and article.price is not None
+            ):
+                self.service.create_article(
+                    convert_article_model_dto_endpoint_to_article_model_dao(article)
+                )
                 return article
             return CustomError("Error creating article", 400)
         except Exception:
             return CustomError("Internal Error", 500)
 
-    def update_article_handler(self, id: int, article: ArticleModelDTOEndpoint) -> ArticleModelDTOEndpoint | CustomError:
+    def update_article_handler(
+        self, id: int, article: ArticleModelDTOEndpoint
+    ) -> ArticleModelDTOEndpoint | CustomError:
         try:
-            if (article.first_name is not None and
-                    article.last_name is not None and
-                    article.price is not None):
-                self.service.update_article(id, convert_article_model_dto_endpoint_to_article_model_dao(article))
+            if (
+                article.first_name is not None
+                and article.last_name is not None
+                and article.price is not None
+            ):
+                self.service.update_article(
+                    id, convert_article_model_dto_endpoint_to_article_model_dao(article)
+                )
                 return article
             return CustomError("Error updating article", 400)
         except Exception:

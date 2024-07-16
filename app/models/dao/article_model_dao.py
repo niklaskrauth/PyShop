@@ -13,5 +13,3 @@ class ArticleModelDAO(BaseModel):
 
 class ArticlesModelDAO(BaseModel):
     articles: list[ArticleModelDAO]
-
-
