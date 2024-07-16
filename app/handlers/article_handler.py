@@ -12,7 +12,7 @@ class ArticleHandler:
     def get_articles_handler(self) -> ArticlesModelDTO | CustomError:
         try:
             articles: ArticlesModelDAO = self.service.get_all_articles()
-            if articles is not None:
+            if articles is not None and len(articles) > 0:
                 articles: ArticlesModelDTO = convert_articles_model_dao_to_articles_model_dto(articles)
                 return articles
             return CustomError("Error getting all articles", 404)

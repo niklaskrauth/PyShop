@@ -9,9 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
 from app.database.db_connection import close_connection, create_connection
-from app.errors.custom_error import CustomError
 from app.handlers.article_handler import ArticleHandler
-from app.models.dao.article_model_dao import ArticleModelDAO
 from app.services.articles_service import ArticlesService
 from app.models.dto.article_model_dto import ArticleModelDTO, ArticlesModelDTO, ArticleModelDTOEndpoint
 
