@@ -10,6 +10,7 @@ from starlette.responses import JSONResponse
 
 from app.database.db_connection import close_connection, create_connection
 from app.handlers.article_handler import ArticleHandler
+from app.models.error.error_model import ErrorResponseModel
 from app.services.articles_service import ArticlesService
 from app.models.dto.article_model_dto import (
     ArticleModelDTO,
@@ -65,8 +66,8 @@ async def health_endpoint() -> str:
     description="Get all articles from the database",
     responses={
         200: {"model": ArticlesModelDTO},
-        404: {"description": "Articles not found", "model": str},
-        500: {"description": "Internal Server Error", "model": str},
+        404: {"description": "Articles not found", "model": ErrorResponseModel},
+        500: {"description": "Internal Server Error", "model": ErrorResponseModel},
     },
 )
 async def get_articles_endpoint() -> JSONResponse:
@@ -79,9 +80,9 @@ async def get_articles_endpoint() -> JSONResponse:
     description="Get a specific article from the database",
     responses={
         200: {"model": ArticleModelDTO},
-        404: {"description": "Article not found", "model": str},
-        422: {"description": "Unprocessable Entity", "model": str},
-        500: {"description": "Internal Server Error", "model": str},
+        404: {"description": "Article not found", "model": ErrorResponseModel},
+        422: {"description": "Unprocessable Entity", "model": ErrorResponseModel},
+        500: {"description": "Internal Server Error", "model": ErrorResponseModel},
     },
 )
 async def get_article_endpoint(id: int) -> JSONResponse:
@@ -97,9 +98,9 @@ async def get_article_endpoint(id: int) -> JSONResponse:
             "description": "Article created successfully!",
             "model": ArticleModelDTOEndpoint,
         },
-        400: {"description": "Bad Request", "model": str},
-        422: {"description": "Unprocessable Entity", "model": str},
-        500: {"description": "Internal Server Error", "model": str},
+        400: {"description": "Bad Request", "model": ErrorResponseModel},
+        422: {"description": "Unprocessable Entity", "model": ErrorResponseModel},
+        500: {"description": "Internal Server Error", "model": ErrorResponseModel},
     },
 )
 async def create_article_endpoint(article: ArticleModelDTOEndpoint) -> JSONResponse:
@@ -116,9 +117,9 @@ async def create_article_endpoint(article: ArticleModelDTOEndpoint) -> JSONRespo
             "description": "Article updated successfully!",
             "model": ArticleModelDTOEndpoint,
         },
-        400: {"description": "Bad Request", "model": str},
-        422: {"description": "Unprocessable Entity", "model": str},
-        500: {"description": "Internal Server Error", "model": str},
+        400: {"description": "Bad Request", "model": ErrorResponseModel},
+        422: {"description": "Unprocessable Entity", "model": ErrorResponseModel},
+        500: {"description": "Internal Server Error", "model": ErrorResponseModel},
     },
 )
 async def update_article_endpoint(
@@ -132,10 +133,13 @@ async def update_article_endpoint(
     name="Delete an article",
     description="Delete an article from the database",
     responses={
-        200: {"description": "Article deleted successfully!", "model": str},
-        404: {"description": "Article not found", "model": str},
-        422: {"description": "Unprocessable Entity", "model": str},
-        500: {"description": "Internal Server Error", "model": str},
+        200: {
+            "description": "Article deleted successfully!",
+            "model": ErrorResponseModel,
+        },
+        404: {"description": "Article not found", "model": ErrorResponseModel},
+        422: {"description": "Unprocessable Entity", "model": ErrorResponseModel},
+        500: {"description": "Internal Server Error", "model": ErrorResponseModel},
     },
 )
 async def delete_article_endpoint(id: int) -> JSONResponse:
