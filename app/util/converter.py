@@ -13,6 +13,8 @@ def convert_articles_model_dao_to_articles_model_dto(
 ) -> ArticlesModelDTO | Exception:
     try:
         articles_dto = ArticlesModelDTO(articles=[])
+
+        print(articles_dao)
         for article_dao in articles_dao:
             article_dto = ArticleModelDTO(
                 id=article_dao[0],

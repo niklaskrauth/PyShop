@@ -163,6 +163,7 @@ def test_create_article_handler_success(article_handler, mocker):
     )
 
     response = article_handler.create_article_handler(article)
+
     assert response.status_code == 200
     assert (
         response.body.decode()
@@ -180,6 +181,7 @@ def test_create_article_handler_exception(article_handler, mocker):
     )
 
     response = article_handler.create_article_handler(article)
+
     assert response.status_code == 500
     assert response.body.decode() == '{"message":"Internal Server Error"}'
 
@@ -197,6 +199,7 @@ def test_update_article_handler_returns_success_when_updated(article_handler, mo
     )
 
     response = article_handler.update_article_handler(1, article)
+
     assert response.status_code == 200
     assert response.body.decode() == (
         '{"imageUrl":"",' '"first_name":"Jane","last_name":"Doe","price":100.0}'
@@ -215,6 +218,7 @@ def test_update_article_handler_returns_internal_server_error_on_exception(
     )
 
     response = article_handler.update_article_handler(1, article)
+
     assert response.status_code == 500
     assert response.body.decode() == '{"message":"Internal Server Error"}'
 
@@ -251,6 +255,7 @@ def test_delete_article_handler_returns_not_found_when_id_is_invalid(
     )
 
     response = article_handler.delete_article_handler(999)
+
     assert response.status_code == 404
     assert response.body.decode() == '{"message":"Article not found"}'
 
@@ -265,5 +270,6 @@ def test_delete_article_handler_returns_internal_server_error_on_exception(
     )
 
     response = article_handler.delete_article_handler(1)
+
     assert response.status_code == 500
     assert response.body.decode() == '{"message":"Internal Server Error"}'

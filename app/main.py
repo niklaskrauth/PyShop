@@ -18,8 +18,6 @@ from app.models.dto.article_model_dto import (
     ArticleModelDTOEndpoint,
 )
 
-# TODO: Add tests via Pytest
-
 origins = [
     "http://localhost",
     "http://localhost:3000",
