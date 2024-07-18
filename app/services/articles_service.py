@@ -25,14 +25,16 @@ class ArticlesService:
             except Exception as e:
                 return e
 
-    def get_article(self, id: int) -> list | Exception:
+    def get_article(
+        self, id: int
+    ) -> list | Exception:  # TODO: Function must match the return type
         if self.connection:
             try:
                 cursor = self.connection.cursor()
                 cursor.execute("SELECT * FROM articles WHERE id = %s", (id,))
                 return cursor.fetchone()
             except Exception as e:
-                return e
+                return e  # TODO: RAise the exception
 
     def create_article(self, article: ArticleModelDAO) -> None | Exception:
         if self.connection:

@@ -46,6 +46,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# TODO: Fix up the get_article-service
+# TODO: Write every thing down in Notion so you won't forget it!
+
+# TODO: Difference uvicorn gunicorn?
+# TODO: Read about workers and how the be used with uvicorn/gunicorn
+# TODO: Understand poetry
+# TODO. Understand the Python environment
+# TODO: Why the environment is needed?
+
 
 @app.get(
     "/health",

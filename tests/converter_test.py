@@ -1,3 +1,5 @@
+import unittest
+
 import pytest
 
 from app.models.dao.article_model_dao import ArticlesModelDAO, ArticleModelDAO
@@ -11,6 +13,10 @@ from app.util.converter import (
     convert_list_to_article_model_dto,
     convert_article_model_dto_endpoint_to_article_model_dao,
 )
+
+
+class TestConverter(unittest.TestCase):
+    pass
 
 
 @pytest.fixture
@@ -35,8 +41,6 @@ def test_conversion_from_dao_to_dto_succeeds():
     ]
 
     result = convert_articles_model_dao_to_articles_model_dto(articles_dao)
-
-    print(type(result))
 
     assert isinstance(result, ArticlesModelDTO)
     assert len(result.articles) == 2
