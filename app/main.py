@@ -49,10 +49,19 @@ app.add_middleware(
 # TODO: Fix up the get_article-service                                  -> DONE
 
 # TODO: Difference uvicorn gunicorn?                                    -> DONE
-# TODO: Read about workers and how the be used with uvicorn/gunicorn    -> DONE
+# Gunicorn is a WSGI HTTP server for Python web applications. The Gunicorn server is broadly compatible with various web frameworks, simply implemented, light on server resources, and fairly speedy.
+# Uvicorn is a lightning-fast ASGI server implementation that is perfect for running asynchronous web applications.
+# Guvicorn: Gunicorn + Uvicorn. It is a Gunicorn worker class that runs an ASGI application, using Uvicorn to serve the application.
+# TODO: Read about workers and how to be used with uvicorn/gunicorn     -> DONE
+# A worker is a separate process that is responsible for handling requests.
+# Gunicorn uses workers to handle requests and runs parallel instances of the application.
+# Uvicorn is an ASGI server that can run multiple worker processes. Although it is not recommended to run multiple worker processes with Uvicorn, it is possible to do so.
 # TODO: Understand poetry                                               -> DONE
+# Poetry is a tool for dependency management and packaging in Python. It allows you to declare the libraries your project depends on and it will manage (install/update) them for you.
 # TODO. Understand the Python environment (venv)                        -> DONE
+# A virtual environment is an isolated directory that contains a Python Project for a particular version of Python, plus a number of additional packages.
 # TODO: Why the environment is needed?                                  -> DONE
+# So that the dependencies of the project are isolated from the system dependencies. This way, the project can be run on any machine without having to worry about the dependencies.
 
 
 @app.get(
