@@ -10,7 +10,7 @@ from app.models.dto.article_model_dto import (
 
 def convert_articles_model_dao_to_articles_model_dto(
     articles_dao: ArticlesModelDAO,
-) -> ArticlesModelDTO | Exception:
+) -> ArticlesModelDTO | None:
     try:
         articles_dto = ArticlesModelDTO(articles=[])
         for article_dao in articles_dao:
@@ -25,24 +25,29 @@ def convert_articles_model_dao_to_articles_model_dto(
         return articles_dto
     except Exception as e:
         logger.error(f"Error converting articles model dao to articles model dto: {e}")
-        return e
+        raise e
 
 
-def convert_list_to_article_model_dto(article: list) -> ArticleModelDTO | Exception:
+def convert_article_model_dao_to_article_model_dto(
+    article_dao: ArticleModelDAO,
+) -> ArticleModelDTO | None:
     try:
-        article_dict = dict(
-            zip(["id", "imageUrl", "first_name", "last_name", "price"], article)
+        article_dto = ArticleModelDTO(
+            id=article_dao.id,
+            imageUrl=article_dao.imageUrl,
+            first_name=article_dao.first_name,
+            last_name=article_dao.last_name,
+            price=article_dao.price,
         )
-        article_dto = ArticleModelDTO(**article_dict)
         return article_dto
     except Exception as e:
-        logger.error(f"Error converting list to article model dto: {e}")
-        return e
+        logger.error(f"Error converting article model dao to article model dto: {e}")
+        raise e
 
 
 def convert_article_model_dto_endpoint_to_article_model_dao(
     article_dto_endpoint: ArticleModelDTOEndpoint,
-) -> ArticleModelDAO | Exception:
+) -> ArticleModelDAO | None:
     try:
         article_dao = ArticleModelDAO(
             id=0,
@@ -56,4 +61,4 @@ def convert_article_model_dto_endpoint_to_article_model_dao(
         logger.error(
             f"Error converting article model dto endpoint to article model dao: {e}"
         )
-        return e
+        raise e

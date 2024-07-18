@@ -3,7 +3,7 @@ import json
 from loguru import logger
 from starlette.responses import JSONResponse
 
-from app.models.dao.article_model_dao import ArticlesModelDAO
+from app.models.dao.article_model_dao import ArticlesModelDAO, ArticleModelDAO
 from app.models.dto.article_model_dto import (
     ArticlesModelDTO,
     ArticleModelDTO,
@@ -11,8 +11,8 @@ from app.models.dto.article_model_dto import (
 )
 from app.util.converter import (
     convert_articles_model_dao_to_articles_model_dto,
-    convert_list_to_article_model_dto,
     convert_article_model_dto_endpoint_to_article_model_dao,
+    convert_article_model_dao_to_article_model_dto,
 )
 
 
@@ -45,10 +45,11 @@ class ArticleHandler:
 
     def get_article_handler(self, id: int) -> JSONResponse:
         try:
-            article: list = self.service.get_article(id)
-
+            article: ArticleModelDAO = self.service.get_article(id)
             if article is not None:
-                article: ArticleModelDTO = convert_list_to_article_model_dto(article)
+                article: ArticleModelDTO = (
+                    convert_article_model_dao_to_article_model_dto(article)
+                )
                 return JSONResponse(
                     content=json.loads(article.model_dump_json()), status_code=200
                 )

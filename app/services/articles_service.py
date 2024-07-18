@@ -16,27 +16,37 @@ class ArticlesService:
             except Exception:
                 return False
 
-    def get_all_articles(self) -> ArticlesModelDAO | Exception:
+    def get_all_articles(self) -> ArticlesModelDAO | None:
         if self.connection:
             try:
                 cursor = self.connection.cursor()
                 cursor.execute("SELECT * FROM articles")
                 return cursor.fetchall()
             except Exception as e:
-                return e
+                raise e
 
-    def get_article(
-        self, id: int
-    ) -> list | Exception:  # TODO: Function must match the return type
+    def get_article(self, id: int) -> ArticleModelDAO | None:
         if self.connection:
             try:
                 cursor = self.connection.cursor()
                 cursor.execute("SELECT * FROM articles WHERE id = %s", (id,))
-                return cursor.fetchone()
-            except Exception as e:
-                return e  # TODO: RAise the exception
+                article_data = cursor.fetchone()
 
-    def create_article(self, article: ArticleModelDAO) -> None | Exception:
+                if article_data is None:
+                    return None
+
+                article_dict = dict(
+                    zip(
+                        ["id", "imageUrl", "first_name", "last_name", "price"],
+                        article_data,
+                    )
+                )
+                article = ArticleModelDAO(**article_dict)
+                return article
+            except Exception as e:
+                raise e
+
+    def create_article(self, article: ArticleModelDAO) -> None:
         if self.connection:
             try:
                 cursor = self.connection.cursor()
@@ -52,9 +62,9 @@ class ArticlesService:
                 cursor.connection.commit()
                 return cursor.rowcount
             except Exception as e:
-                return e
+                raise e
 
-    def update_article(self, id: int, article: ArticleModelDAO) -> None | Exception:
+    def update_article(self, id: int, article: ArticleModelDAO) -> None:
         if self.connection:
             try:
                 cursor = self.connection.cursor()
@@ -71,9 +81,9 @@ class ArticlesService:
                 cursor.connection.commit()
                 return cursor.rowcount
             except Exception as e:
-                return e
+                raise e
 
-    def delete_article(self, id: int) -> None | Exception:
+    def delete_article(self, id: int) -> None:
         if self.connection:
             try:
                 cursor = self.connection.cursor()
@@ -81,4 +91,4 @@ class ArticlesService:
                 cursor.connection.commit()
                 return cursor.rowcount
             except Exception as e:
-                return e
+                raise e
